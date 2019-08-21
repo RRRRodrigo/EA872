@@ -4,4 +4,6 @@
 all: model
 
 model:
-	g++ -omodel model_mainloop.cpp oo_model.cpp
+	g++ -std=c++11 -omodel model_mainloop.cpp oo_model.cpp 
+clear:
+	rm model

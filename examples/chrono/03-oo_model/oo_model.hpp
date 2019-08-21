@@ -7,6 +7,7 @@ class Corpo {
   float massa;
   float velocidade;
   float posicao;
+  float constante;
 
   public:
   Corpo(float massa, float velocidade, float posicao);
@@ -14,6 +15,7 @@ class Corpo {
   float get_massa();
   float get_velocidade();
   float get_posicao();
+  float get_constante();
 };
 
 class ListaDeCorpos {
