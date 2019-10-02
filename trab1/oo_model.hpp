@@ -6,16 +6,16 @@
 
 class Corpo {
   private:
-  float massa;
-  float velocidade;
   float posicao;
+  float velocidade;
+  float massa;
 
   public:
   Corpo(float massa, float velocidade, float posicao);
   void update(float nova_velocidade, float nova_posicao);
-  float get_massa();
-  float get_velocidade();
   float get_posicao();
+  float get_velocidade();
+  float get_massa();
 };
 
 class ListaDeCorpos {
@@ -29,6 +29,18 @@ class ListaDeCorpos {
     std::vector<Corpo*> *get_corpos();
 };
 
+class Projetil {
+    private:
+    
+    char mapa[20][200]; //linha e coluna
+    
+    public:
+    void generate(float chance);
+    Projetil(); //talvez seja desnecessário
+    ~Projetil();
+    void update();
+};
+
 class Fisica {
   private:
     ListaDeCorpos *lista;
@@ -36,8 +48,7 @@ class Fisica {
   public:
     Fisica(ListaDeCorpos *ldc);
     void add_corpo(Corpo *c);
-    void choque();
-    void choque2();
+    void salto(float direcao);
     void update(float deltaT);
 };
 

@@ -1,8 +1,17 @@
 #include <vector>
+#include <chrono>
+#include <thread>
+#include <iostream>
 
 #include "oo_model.hpp"
 
 #include <ncurses.h>
+#include <cstdlib>.
+
+#define MAX_Y = 20
+#define MAX_X = 200
+
+using namespace std::chrono;
 
 Corpo::Corpo(float massa, float velocidade, float posicao) {
   this->massa = massa;
@@ -53,6 +62,21 @@ std::vector<Corpo*> *ListaDeCorpos::get_corpos() {
   return (this->corpos);
 }
 
+Projetil::generate(float chance){
+    // RAND_MAX
+    int i = 0, j = 0;
+    int alea;
+    for(i=0;i<MAX_Y;i++){
+        for(j=0;j<MAX_X;j++){
+            alea = rand();
+            if(alea >= (RAND_MAX * chance))
+                this->mapa[i][j] = '#';
+            else
+                this->mapa[i][j] = 0;
+        }
+    }
+}
+
 Fisica::Fisica(ListaDeCorpos *ldc) {
   this->lista = ldc;
 }
@@ -60,10 +84,21 @@ Fisica::Fisica(ListaDeCorpos *ldc) {
 void Fisica::update(float deltaT) {
   // Atualiza parametros dos corpos!
   std::vector<Corpo *> *c = this->lista->get_corpos();
+  
   for (int i = 0; i < (*c).size(); i++) {
-    float new_vel = ((*c)[i]->get_velocidade() + (float)deltaT * (-9.0 * (*c)[i]->get_posicao())/1000) * 0.85;
+    float new_vel = (*c)[i]->get_velocidade() - ((*c)[i]->get_velocidade()/3);
     float new_pos = (*c)[i]->get_posicao() + (float)deltaT * new_vel/1000;
+    (*c)[i]->update(new_vel, new_pos);
+  }
+}
 
+void Fisica::salto(float direcao) {
+  // Atualiza parametros dos corpos!
+  std::vector<Corpo *> *c = this->lista->get_corpos();
+
+  for (int i = 0; i < (*c).size(); i++) {
+    float new_vel = (*c)[i]->get_velocidade() + (160 * direcao);
+    float new_pos = (*c)[i]->get_posicao();
     (*c)[i]->update(new_vel, new_pos);
   }
 }
@@ -88,6 +123,7 @@ void Tela::update() {
   int i;
 
   std::vector<Corpo *> *corpos_old = this->lista_anterior->get_corpos();
+  std::
 
   // Apaga corpos na tela
   for (int k=0; k<corpos_old->size(); k++)
@@ -119,6 +155,10 @@ void Tela::update() {
                                (*corpos)[k]->get_posicao());
   }
 
+  
+  // Apaga e atualiza a tela
+  
+  
   // Atualiza tela
   refresh();
 }
@@ -132,5 +172,60 @@ Tela::~Tela() {
 }
 
 
+/*
+class Teclado {
+  private:
+    char ultima_captura;
+    int rodando;
 
+  public:
+    Teclado();
+    ~Teclado();
+    void stop();
+    void init();
+    char getchar();
+}
 
+*/
+
+void threadfun (char *keybuffer, int *control)
+{
+  char c;
+  while ((*control) == 1) {
+    c = getch();
+    if (c!=ERR) (*keybuffer) = c;
+    else (*keybuffer) = 0;
+    std::this_thread::sleep_for (std::chrono::milliseconds(10));
+  }
+  return;
+}
+
+Teclado::Teclado() {
+}
+
+Teclado::~Teclado() {
+}
+
+void Teclado::init() {
+  // Inicializa ncurses
+
+  raw();				         /* Line buffering disabled	*/
+	keypad(stdscr, TRUE);	 /* We get F1, F2 etc..		*/
+	noecho();			         /* Don't echo() while we do getch */
+  curs_set(0);           /* Do not display cursor */
+
+  this->rodando = 1;
+  std::thread newthread(threadfun, &(this->ultima_captura), &(this->rodando));
+  (this->kb_thread).swap(newthread);
+}
+
+void Teclado::stop() {
+  this->rodando = 0;
+  (this->kb_thread).join();
+}
+
+char Teclado::getchar() {
+  char c = this->ultima_captura;
+  this->ultima_captura = 0;
+  return c;
+}

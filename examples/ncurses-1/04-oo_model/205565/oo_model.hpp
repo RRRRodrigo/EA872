@@ -2,8 +2,6 @@
 #ifndef OO_MODEL_HPP
 #define OO_MODEL_HPP
 
-#include <thread>
-
 class Corpo {
   private:
   float massa;
@@ -36,8 +34,6 @@ class Fisica {
   public:
     Fisica(ListaDeCorpos *ldc);
     void add_corpo(Corpo *c);
-    void choque();
-    void choque2();
     void update(float deltaT);
 };
 
@@ -55,21 +51,6 @@ class Tela {
     void update();
 };
 
-void threadfun (char *keybuffer, int *control);
 
-class Teclado {
-  private:
-    char ultima_captura;
-    int rodando;
-
-    std::thread kb_thread;
-
-  public:
-    Teclado();
-    ~Teclado();
-    void stop();
-    void init();
-    char getchar();
-};
 
 #endif

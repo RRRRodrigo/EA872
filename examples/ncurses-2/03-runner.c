@@ -5,10 +5,10 @@
 
 volatile char keypress;
 volatile int keyboard_thread_running;
+volatile char c;
 
 void *keyboard_thread(void *params)
 {
-  char c;
   while (keyboard_thread_running == 1) {
     c = getch();
     if (c!=ERR) keypress = c;

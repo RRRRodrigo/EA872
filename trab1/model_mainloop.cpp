@@ -12,21 +12,18 @@ uint64_t get_now_ms() {
 
 int main ()
 {
-  Corpo *c1 = new Corpo(10, 0, 100);
-  Corpo *c2 = new Corpo(10, 0, 19);
-  Corpo *c3 = new Corpo(10, 0, 17);
-  Corpo *c4 = new Corpo(10, 0, 15);
+  Corpo *mainplayer = new Corpo(10, 0, 10);
 
   ListaDeCorpos *l = new ListaDeCorpos();
-  l->add_corpo(c1);
-  l->add_corpo(c2);
-  l->add_corpo(c3);
-  l->add_corpo(c4);
+  l->add_corpo(mainplayer);
 
   Fisica *f = new Fisica(l);
-  
+
   Tela *tela = new Tela(l, 40, 40, 40, 40);
   tela->init();
+
+  Teclado *teclado = new Teclado();
+  teclado->init();
 
   uint64_t t0;
   uint64_t t1;
@@ -49,12 +46,24 @@ int main ()
     // Atualiza tela
     tela->update();
 
-    // Condicao de parada
-    if ( (t1-T) > 10000 ) break;
+    // Lê o teclado
+    char c = teclado->getchar();
+    if (c=='s') {
+      f->salto(1);
+    }
+    if (c=='w')
+      f->salto(-1);
+    if (c=='q') {
+      break;
+    }
 
-    std::this_thread::sleep_for (std::chrono::milliseconds(100));
+    // Condicao de parada
+    if ( (t1-T) > 1000000 ) break;
+
+    std::this_thread::sleep_for (std::chrono::milliseconds(16));
     i++;
   }
   tela->stop();
+  teclado->stop();
   return 0;
 }
